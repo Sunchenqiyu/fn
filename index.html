@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fn 项目控制台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar" aria-label="功能导航">
+        <div class="sidebar__brand">
+          <span class="sidebar__logo" aria-hidden="true">fn</span>
+          <span class="sidebar__name">协同工作台</span>
+        </div>
+        <nav class="sidebar__nav">
+          <button class="nav__item nav__item--active" data-view="dashboard">
+            <span aria-hidden="true">📊</span>
+            <span>概览</span>
+          </button>
+          <button class="nav__item" data-view="tasks">
+            <span aria-hidden="true">🗂️</span>
+            <span>任务</span>
+          </button>
+          <button class="nav__item" data-view="calendar">
+            <span aria-hidden="true">🗓️</span>
+            <span>日程</span>
+          </button>
+          <button class="nav__item" data-view="files">
+            <span aria-hidden="true">📁</span>
+            <span>文件</span>
+          </button>
+        </nav>
+        <div class="sidebar__footer">
+          <button class="theme-toggle" type="button">
+            <span aria-hidden="true">🌓</span>
+            <span>切换主题</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <header class="content__header">
+          <div class="content__title-group">
+            <h1 class="content__title">Fn 协同面板</h1>
+            <p class="content__subtitle">
+              集中管理任务、成员以及项目进展，打造高效协作体验。
+            </p>
+          </div>
+          <div class="content__actions">
+            <form class="search" role="search">
+              <label class="search__label" for="search-input">快速查找</label>
+              <input
+                id="search-input"
+                class="search__input"
+                type="search"
+                name="search"
+                placeholder="搜索任务、成员或文件"
+                autocomplete="off"
+              />
+            </form>
+            <button class="primary" type="button" id="new-task">
+              <span aria-hidden="true">＋</span>
+              <span>新增任务</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="cards" aria-label="关键指标">
+          <article class="card">
+            <header class="card__header">
+              <h2 class="card__title">活跃项目</h2>
+              <span class="card__icon" aria-hidden="true">🚀</span>
+            </header>
+            <p class="card__value" id="projects-count">4</p>
+            <p class="card__description">本周正在推进的项目数量</p>
+          </article>
+
+          <article class="card">
+            <header class="card__header">
+              <h2 class="card__title">待办任务</h2>
+              <span class="card__icon" aria-hidden="true">✅</span>
+            </header>
+            <p class="card__value" id="tasks-count">18</p>
+            <p class="card__description">团队成员正在处理的任务总数</p>
+          </article>
+
+          <article class="card">
+            <header class="card__header">
+              <h2 class="card__title">风险预警</h2>
+              <span class="card__icon" aria-hidden="true">⚠️</span>
+            </header>
+            <p class="card__value" id="alerts-count">2</p>
+            <p class="card__description">需要重点关注的高风险事项</p>
+          </article>
+        </section>
+
+        <section class="panels" aria-label="工作流详情">
+          <article class="panel" data-panel="timeline">
+            <header class="panel__header">
+              <h2 class="panel__title">进行中的任务</h2>
+              <span class="panel__hint">按优先级排序</span>
+            </header>
+            <ul class="timeline" id="timeline" aria-live="polite"></ul>
+          </article>
+
+          <article class="panel" data-panel="members">
+            <header class="panel__header">
+              <h2 class="panel__title">团队成员</h2>
+              <span class="panel__hint">实时在线状态</span>
+            </header>
+            <ul class="members" id="members" aria-live="polite"></ul>
+          </article>
+        </section>
+
+        <section class="panel" data-panel="notes">
+          <header class="panel__header">
+            <h2 class="panel__title">协作笔记</h2>
+            <span class="panel__hint">用于记录会议纪要或关键决策</span>
+          </header>
+          <form class="notes" id="notes-form">
+            <label class="notes__label" for="notes-input">记录新笔记</label>
+            <textarea
+              class="notes__input"
+              id="notes-input"
+              name="notes"
+              rows="4"
+              placeholder="输入最新的讨论结论或待办事项"
+              required
+            ></textarea>
+            <button class="primary" type="submit">保存笔记</button>
+          </form>
+          <ul class="notes__list" id="notes-list" aria-live="polite"></ul>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="modal" id="task-modal" aria-labelledby="task-modal-title">
+      <form method="dialog" class="modal__content" id="task-form">
+        <header class="modal__header">
+          <h2 class="modal__title" id="task-modal-title">新增任务</h2>
+          <button class="modal__close" value="cancel" aria-label="关闭">×</button>
+        </header>
+        <div class="modal__field">
+          <label class="modal__label" for="task-title">任务名称</label>
+          <input
+            class="modal__input"
+            id="task-title"
+            name="title"
+            type="text"
+            placeholder="例如：交付UI方案V2"
+            required
+          />
+        </div>
+        <div class="modal__field">
+          <label class="modal__label" for="task-owner">负责人</label>
+          <input
+            class="modal__input"
+            id="task-owner"
+            name="owner"
+            type="text"
+            placeholder="输入成员姓名"
+            required
+          />
+        </div>
+        <div class="modal__field">
+          <label class="modal__label" for="task-priority">优先级</label>
+          <select class="modal__input" id="task-priority" name="priority">
+            <option value="high">高</option>
+            <option value="medium" selected>中</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+        <div class="modal__actions">
+          <button class="secondary" value="cancel">取消</button>
+          <button class="primary" value="confirm" type="submit">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <template id="timeline-item-template">
+      <li class="timeline__item">
+        <span class="timeline__badge" data-priority></span>
+        <div class="timeline__content">
+          <p class="timeline__title" data-title></p>
+          <p class="timeline__meta" data-meta></p>
+        </div>
+      </li>
+    </template>
+
+    <template id="member-item-template">
+      <li class="members__item">
+        <span class="members__avatar" aria-hidden="true" data-initials></span>
+        <div class="members__meta">
+          <p class="members__name" data-name></p>
+          <p class="members__role" data-role></p>
+        </div>
+        <span class="members__status" data-status></span>
+      </li>
+    </template>
+
+    <template id="note-item-template">
+      <li class="notes__item">
+        <p class="notes__text" data-text></p>
+        <time class="notes__time" data-time></time>
+      </li>
+    </template>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
